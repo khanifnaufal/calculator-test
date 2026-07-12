@@ -50,6 +50,14 @@ class CLTLayupType {
   getLayerAngles() {
     return this.layers.map(layer => layer.angle);
   }
+
+  /**
+   * Returns the array of layer objects.
+   * @returns {Array<import('./clt-layer-type.js').default>} Array of CLTLayerType instances.
+   */
+  getLayers() {
+    return this.layers;
+  }
 }
 
 export default CLTLayupType;
