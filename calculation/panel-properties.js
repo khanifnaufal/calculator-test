@@ -9,6 +9,8 @@
  */
 
 import gradeTable from '../type/material-grade-type.js';
+import PanelPropertiesType from '../type/panel-properties-type.js';
+import CLTLayerPropertiesType from '../type/clt-layer-properties-type.js';
 
 /**
  * Kelas dasar (base class) untuk perhitungan properti panel CLT.
@@ -105,20 +107,12 @@ export class ShearAnalogyMethod extends PanelProperties {
             const EI_i = (selfInertia + steinerTerm) * Ei;
 
             EIeff += EI_i;
-            layerBreakdown.push({
-                thickness: ti,
-                angle: layer.angle,
-                EI_i: EI_i
-            });
+            layerBreakdown.push(new CLTLayerPropertiesType(ti, layer.angle, EI_i));
 
             cumulativeThickness += ti;
         }
 
-        return {
-            method: "shear-analogy",
-            EIeff: EIeff,
-            layerBreakdown: layerBreakdown
-        };
+        return new PanelPropertiesType("shear-analogy", EIeff, layerBreakdown);
     }
 }
 
@@ -289,12 +283,7 @@ export class GammaMethod extends PanelProperties {
                 const EI_i = (selfInertia + gamma_i * steinerTerm) * Ei;
                 
                 EIeff += EI_i;
-                layerBreakdown.push({
-                    thickness: ti,
-                    angle: layer.angle,
-                    gamma: gamma_i,
-                    EI_i: EI_i
-                });
+                layerBreakdown.push(new CLTLayerPropertiesType(ti, layer.angle, EI_i, gamma_i));
             } else {
                 /**
                  * Layer 90° (transversal/penyambung):
@@ -303,18 +292,10 @@ export class GammaMethod extends PanelProperties {
                  * yang mentransfer geser antar layer longitudinal.
                  * Kontribusinya sudah diakomodasi melalui faktor gamma dan Gcross.
                  */
-                layerBreakdown.push({
-                    thickness: ti,
-                    angle: layer.angle,
-                    EI_i: 0
-                });
+                layerBreakdown.push(new CLTLayerPropertiesType(ti, layer.angle, 0));
             }
         }
 
-        return {
-            method: "gamma",
-            EIeff: EIeff,
-            layerBreakdown: layerBreakdown
-        };
+        return new PanelPropertiesType("gamma", EIeff, layerBreakdown);
     }
 }
